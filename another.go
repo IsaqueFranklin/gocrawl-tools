@@ -1,15 +1,24 @@
  package main
 
  import (
-   "fmt"
+   //"fmt"
    "github.com/gocolly/colly"
    "encoding/csv"
    "os"
    "log"
  )
 
+// initializing a data structure to keep the scraped data 
+type PokemonProduct struct { 
+	url, image, name, price string 
+} 
+
  func main(){
-   fmt.Println("Hello, world!")
+
+  var pokemonProducts []PokemonProduct
+  c := colly.NewCollector()
+  /*
+    fmt.Println("Hello, world!")
 
    c := colly.NewCollector()
    c.Visit("https://en.wikipedia.org/wiki/Main_Page")
@@ -34,14 +43,9 @@
      fmt.Println(r.Request.URL, " scraped!")
    })
 
-   c.Visit("https://scrapeme.live/shop/")
-
-   type PokemonProduct struct {
-     url, image, name, price, string
-   }
-
-   var pokemonProducts []PokemonProduct
-
+  */ 
+   c.Visit("https://scrapeme.live/shop/") 
+ 
    c.OnHTML("li.product", func(e *colly.HTMLElement){
      //Initializing a new PokemonProduct instance
      pokemonProduct := PokemonProduct{}
@@ -49,8 +53,8 @@
      //Scraping the data of interests
      pokemonProduct.url = e.ChildAttr("a", "href")
      pokemonProduct.image = e.ChildAttr("img", "src")
-     pokemonProduct.name = e.ChildAttr("h2")
-     pokemonProduct.price = e.ChildAttr(".price")
+     pokemonProduct.name = e.ChildText("h2")
+     pokemonProduct.price = e.ChildText(".price")
 
      //Adding the product instance with scraped data to the list of products 
      pokemonProducts = append(pokemonProducts, pokemonProduct)
@@ -58,8 +62,8 @@
 
 
   // Opening CSV file
-   file, err := os.Create("producst.csv")
-   ir err != nil {
+   file, err := os.Create("products.csv")
+   if err != nil {
      log.Fatalln("Failed to create output CSV file.", err)
    }
    defer file.Close()
@@ -69,10 +73,10 @@
 
    //Defining the CSV headers
    headers := []string{
-     "url"
-     "image"
-     "name"
-     "price"
+     "url",
+     "image",
+     "name",
+     "price",
    }
 
    //Writing the column headers
